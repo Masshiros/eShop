@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
-const CONNECTION_STRING = "mongodb://localhost:27017/eGas";
+const {
+  db: { host, port, name },
+} = require("../configs/config.mongo");
+const CONNECTION_STRING = `mongodb://${host}:${port}/${name}`;
 
 mongoose
   .connect(CONNECTION_STRING)

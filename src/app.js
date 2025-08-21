@@ -1,3 +1,4 @@
+require("./configs/config.env.js");
 const express = require("express");
 const morgan = require("morgan");
 const { default: helmet } = require("helmet");
@@ -5,6 +6,7 @@ const compression = require("compression");
 const { checkOverload } = require("./helpers/check-connection");
 const app = express();
 
+console.log(process.env);
 // middleware
 app.use(morgan("dev"));
 app.use(helmet());
