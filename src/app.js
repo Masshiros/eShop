@@ -5,8 +5,8 @@ const { default: helmet } = require("helmet");
 const compression = require("compression");
 const { checkOverload } = require("./helpers/check-connection");
 const app = express();
+const routes = require("./routes");
 
-console.log(process.env);
 // middleware
 app.use(morgan("dev"));
 app.use(helmet());
@@ -15,11 +15,6 @@ app.use(compression());
 require("./dbs/init-mongo");
 checkOverload();
 // route
-app.get("/hello", (req, res, next) => {
-  res.status(200).send({
-    string: "Hello from Kei",
-    compressionTest: "ABC HELLLO".repeat(1000),
-  });
-});
+app.use("", routes);
 // error
 module.exports = app;
