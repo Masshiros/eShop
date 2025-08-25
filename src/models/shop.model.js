@@ -1,4 +1,4 @@
-const { verify } = require("crypto");
+
 const mongoose = require("mongoose"); // Erase if already required
 const DOCUMENT_NAME = "shops";
 const COLLECTION_NAME = "shops";

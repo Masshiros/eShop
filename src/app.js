@@ -9,6 +9,8 @@ const routes = require("./routes");
 
 // middleware
 app.use(morgan("dev"));
+app.use(express.json({ limit: '1mb' }));            // for application/json
+app.use(express.urlencoded({ extended: true })); 
 app.use(helmet());
 app.use(compression());
 // db
