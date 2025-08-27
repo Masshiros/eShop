@@ -14,12 +14,16 @@ var keyTokenSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-      // private for RT secret-key
+    // private for RT secret-key
     privateKey: {
       type: String,
       required: true,
     },
-    refreshTokens: {
+    refreshToken: {
+      type: String,
+      required: true,
+    },
+    refreshTokensUsed: {
       type: Array,
       default: [],
     },

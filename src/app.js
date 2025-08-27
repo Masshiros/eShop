@@ -29,7 +29,7 @@ app.use((error, req, res, next) => {
   return res.status(error.status || 500).json({
     status: "error",
     message: error.message || "Internal Server Error",
-    code: error.status,
+    code: error.status || 500,
   });
 });
 module.exports = app;
