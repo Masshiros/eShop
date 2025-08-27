@@ -18,7 +18,7 @@ class AccessService {
     const user = await shopModel.findOne({ email }).lean();
     console.log(user);
     if (user) {
-      throw new BadRequestResponseError("Shop already exist");
+      throw new BadRequestResponseError({ message: "Shop already exist" });
     }
 
     // hash password
@@ -43,7 +43,7 @@ class AccessService {
         privateKey,
       });
       if (!publicKeyStr) {
-        throw new BadRequestResponseError("Public key error");
+        throw new BadRequestResponseError({ message: "Public key error" });
       }
 
       // create tokens
@@ -56,20 +56,14 @@ class AccessService {
         privateKey
       );
       return {
-        code: 201,
-        metadata: {
-          shop: getInfoData({
-            fields: ["_id", "name", "email"],
-            object: createdShop,
-          }),
-          tokens,
-        },
+        shop: getInfoData({
+          fields: ["_id", "name", "email"],
+          object: createdShop,
+        }),
+        tokens,
       };
     }
-    return {
-      code: 200,
-      metadata: null,
-    };
+    return null;
   };
 }
 

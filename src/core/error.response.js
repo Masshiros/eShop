@@ -13,9 +13,6 @@ const StatusCode = {
 };
 
 const ReasonStatusCode = {
-  OK: "OK",
-  CREATED: "Created",
-  NO_CONTENT: "No Content",
   BAD_REQUEST: "Bad Request",
   UNAUTHORIZED: "Unauthorized",
   FORBIDDEN: "Forbidden",
@@ -32,80 +29,80 @@ class ErrorResponse extends Error {
   }
 }
 class ConflictResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.CONFLICT,
-    statusCode = StatusCode.CONFLICT
-  ) {
+    statusCode = StatusCode.CONFLICT,
+  }) {
     super(message, statusCode);
   }
 }
 class BadRequestResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.BAD_REQUEST,
-    statusCode = StatusCode.BAD_REQUEST
-  ) {
+    statusCode = StatusCode.BAD_REQUEST,
+  }) {
     super(message, statusCode);
   }
 }
 class UnauthorizedResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.UNAUTHORIZED,
-    statusCode = StatusCode.UNAUTHORIZED
-  ) {
+    statusCode = StatusCode.UNAUTHORIZED,
+  }) {
     super(message, statusCode);
   }
 }
 
 class ForbiddenResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.FORBIDDEN,
-    statusCode = StatusCode.FORBIDDEN
-  ) {
+    statusCode = StatusCode.FORBIDDEN,
+  }) {
     super(message, statusCode);
   }
 }
 
 class NotFoundResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.NOT_FOUND,
-    statusCode = StatusCode.NOT_FOUND
-  ) {
+    statusCode = StatusCode.NOT_FOUND,
+  }) {
     super(message, statusCode);
   }
 }
 
 class InternalServerErrorResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.INTERNAL_SERVER_ERROR,
-    statusCode = StatusCode.INTERNAL_SERVER_ERROR
-  ) {
+    statusCode = StatusCode.INTERNAL_SERVER_ERROR,
+  }) {
     super(message, statusCode);
   }
 }
 
 class BadGatewayResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.BAD_GATEWAY,
-    statusCode = StatusCode.BAD_GATEWAY
-  ) {
+    statusCode = StatusCode.BAD_GATEWAY,
+  }) {
     super(message, statusCode);
   }
 }
 
 class ServiceUnavailableResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.SERVICE_UNAVAILABLE,
-    statusCode = StatusCode.SERVICE_UNAVAILABLE
-  ) {
+    statusCode = StatusCode.SERVICE_UNAVAILABLE,
+  }) {
     super(message, statusCode);
   }
 }
 
 class NoContentResponseError extends ErrorResponse {
-  constructor(
+  constructor({
     message = ReasonStatusCode.NO_CONTENT,
-    statusCode = StatusCode.NO_CONTENT
-  ) {
+    statusCode = StatusCode.NO_CONTENT,
+  }) {
     super(message, statusCode);
   }
 }
