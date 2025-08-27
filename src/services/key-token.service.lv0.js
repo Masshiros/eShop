@@ -25,5 +25,11 @@ class KeyTokenService {
     const token = await keyTokenModel.findOneAndUpdate(filter, update, options);
     return token ? token.publicKey : null;
   };
+  static findByUserId = async (userId) => {
+    return await keyTokenModel.findOne({ user: userId });
+  };
+  static removeById = async (id) => {
+    return await keyTokenModel.deleteOne({ _id: id });
+  };
 }
 module.exports = KeyTokenService;

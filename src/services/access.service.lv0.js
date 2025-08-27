@@ -17,6 +17,9 @@ const RoleShop = {
   BUYER: "buyer",
 };
 class AccessService {
+  static signOut = async ({ session }) => {
+    return await KeyTokenService.removeById(session._id);
+  };
   static signIn = async ({ email, password, refreshToken }) => {
     // existed?
     const shop = await ShopService.findByEmail({ email });

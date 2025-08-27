@@ -6,6 +6,12 @@ const {
 } = require("../core/success.response");
 
 class AccessController {
+  signOut = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Sign out success",
+      metadata: await AccessService.signOut({ session: req.session }),
+    }).send(res);
+  };
   signIn = async (req, res, next) => {
     return new SuccessResponse({
       message: "Sign in success",
