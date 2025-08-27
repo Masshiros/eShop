@@ -3,11 +3,12 @@ const shopModel = require("../models/shop.model");
 const bcrypt = require("bcrypt");
 const crypto = require("node:crypto");
 const KeyTokenService = require("./key-token.service.lv0");
-const { createTokenPair } = require("../auth/authUtils.lv0");
+const { createTokenPair, verifyToken } = require("../auth/authUtils.lv0");
 const { getInfoData } = require("../utils");
 const {
   BadRequestResponseError,
   UnauthorizedResponseError,
+  ForbiddenResponseError,
 } = require("../core/error.response");
 const ShopService = require("./shop.service");
 
@@ -17,6 +18,58 @@ const RoleShop = {
   BUYER: "buyer",
 };
 class AccessService {
+  static refreshToken = async ({ refreshToken }) => {
+    // check whether token already in used
+    const usedToken = await KeyTokenService.findByRefreshTokensUsed(
+      refreshToken
+    );
+    if (usedToken) {
+      const { userId } = verifyToken(usedToken.refreshToken, usedToken.privateKey);
+      // delete all session
+      await KeyTokenService.removeByUserId(userId);
+      throw new ForbiddenResponseError({
+        message: "Something wrong happened!! Please relogin",
+      });
+    }
+    const availableToken = await KeyTokenService.findByRefreshToken(
+      refreshToken
+    );
+    if (!availableToken) {
+      throw new UnauthorizedResponseError({ message: "Shop not registered" });
+    }
+    const { userId, email } = verifyToken(
+      availableToken.refreshToken,
+      availableToken.privateKey
+    );
+    // check shop/user exist
+    const shop = await ShopService.findByEmail({ email });
+    if (!shop) {
+      throw new UnauthorizedResponseError({ message: "Shop not registered" });
+    }
+   
+    // new pair tokens
+    const tokens = await createTokenPair(
+      {
+        userId: shop._id,
+        email,
+      },
+      availableToken.publicKey,
+      availableToken.privateKey
+    );
+    console.log(tokens)
+    // update used token
+    await KeyTokenService.updateKeyToken({
+      keyToken: availableToken,
+      update: {
+        $set: { refreshToken: tokens.refreshToken },
+        $addToSet: { refreshTokensUsed: refreshToken },
+      },
+    });
+    return {
+      user: { userId, email },
+      tokens,
+    };
+  };
   static signOut = async ({ session }) => {
     return await KeyTokenService.removeById(session._id);
   };
@@ -54,7 +107,7 @@ class AccessService {
       tokens,
       shop: getInfoData({
         fields: ["_id", "name", "email"],
-        object: createdShop,
+        object: shop,
       }),
     };
   };

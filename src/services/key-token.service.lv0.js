@@ -1,3 +1,4 @@
+
 const keyTokenModel = require("../models/key-token.model.lv0");
 
 class KeyTokenService {
@@ -30,6 +31,20 @@ class KeyTokenService {
   };
   static removeById = async (id) => {
     return await keyTokenModel.deleteOne({ _id: id });
+  };
+  static removeByUserId = async (userId) => {
+    return await keyTokenModel.deleteOne({ user: userId });
+  };
+  static findByRefreshTokensUsed = async (refreshToken) => {
+    return await keyTokenModel.findOne({
+      refreshTokensUsed: { $in: [refreshToken] },
+    });
+  };
+  static findByRefreshToken = async (refreshToken) => {
+    return await keyTokenModel.findOne({ refreshToken });
+  };
+  static updateKeyToken = async ({ keyToken, update = {} }) => {
+    await keyTokenModel.updateOne(keyToken, update);
   };
 }
 module.exports = KeyTokenService;

@@ -20,6 +20,10 @@ const createTokenPair = (payload, publicKey, privateKey) => {
     return error;
   }
 };
+const verifyToken = (token, secret) => {
+  return JWT.verify(token, secret);
+};
 module.exports = {
   createTokenPair,
+  verifyToken,
 };

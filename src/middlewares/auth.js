@@ -59,11 +59,13 @@ const authentication = asyncHandler(async (req, res, next) => {
   if (!userId) {
     throw new UnauthorizedResponseError({ message: "Authentication failed" });
   }
+
   // get session
   const session = await KeyTokenService.findByUserId(userId);
   if (!session) {
     throw new UnauthorizedResponseError({ message: "Authentication failed" });
   }
+
   // get at
   const accessToken = req.headers[HEADER.AUTHORIZATION];
   if (!accessToken) {
@@ -77,6 +79,7 @@ const authentication = asyncHandler(async (req, res, next) => {
   if (decodedUser.userId !== userId) {
     throw new UnauthorizedResponseError({ message: "Authentication failed" });
   }
+
   req.session = session;
   return next();
 });
