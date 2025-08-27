@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const accessRouter = require("./access");
-const { validateApiKey, validatePermission } = require("../auth/checkApiKey");
+const { validateApiKey, validatePermission } = require("../middlewares/checkApiKey");
 // middleware
 router.use(validateApiKey);
 router.use(validatePermission("0000"));
