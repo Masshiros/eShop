@@ -71,7 +71,7 @@ class AccessService {
     };
   };
   static signOut = async ({ session }) => {
-    return await KeyTokenService.removeById(session._id);
+    return await KeyTokenService.removeById(session.userId);
   };
   static signIn = async ({ email, password, refreshToken }) => {
     // existed?

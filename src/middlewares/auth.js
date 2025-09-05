@@ -80,7 +80,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     throw new UnauthorizedResponseError({ message: "Authentication failed" });
   }
 
-  req.session = session;
+  req.session = decodedUser;
   return next();
 });
 module.exports = {
