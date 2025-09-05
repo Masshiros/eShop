@@ -5,6 +5,13 @@ const {
   furnitureModel,
 } = require("../models/product.model");
 const { BadRequestResponseError } = require("../core/error.response");
+const {
+  publishProduct,
+  unpublishProduct,
+  findAllDraftProduct,
+  findAllPublishedProduct,
+  searchProductByKeySearch,
+} = require("../models/repositories/product.repo");
 class ProductFactory {
   static productRegistry = {};
   static registerProductType(name, classRef) {
@@ -18,6 +25,29 @@ class ProductFactory {
       });
     }
     return new productClass(payload).createProduct();
+  }
+  static async publishProduct({ product_id, product_shop }) {
+    return await publishProduct({ product_shop, product_id });
+  }
+  static async unpublishProduct({ product_id, product_shop }) {
+    return await unpublishProduct({ product_shop, product_id });
+  }
+  static async findAllDraftProduct({ product_shop, limit = 50, skip = 0 }) {
+    return await findAllDraftProduct({
+      query: { product_shop, isDraft: true },
+      limit,
+      skip,
+    });
+  }
+  static async findAllPublishedProduct({ product_shop, limit = 50, skip = 0 }) {
+    return await findAllPublishedProduct({
+      query: { product_shop, isPublish: true },
+      limit,
+      skip,
+    });
+  }
+  static async searchProduct({ keySearch }) {
+    return await searchProductByKeySearch({ keySearch });
   }
 }
 

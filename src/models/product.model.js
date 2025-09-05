@@ -1,4 +1,5 @@
 const mongoose = require("mongoose"); // Erase if already required
+const { default: slugify } = require("slugify");
 const DOCUMENT_NAME = "products";
 const COLLECTION_NAME = "products";
 // Declare the Schema of the Mongo model
@@ -13,6 +14,9 @@ var productSchema = new mongoose.Schema(
       required: true,
     },
     product_description: {
+      type: String,
+    },
+    product_slug: {
       type: String,
     },
     product_price: {
@@ -36,13 +40,40 @@ var productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       required: true,
     },
+    product_averageRatings: {
+      type: Number,
+      default: 4.5,
+      min: [1, "Rating must be above 1.0"],
+      max: [5, "Rating must be under 5.0"],
+      set: (val) => Math.round(val * 10) / 10,
+    },
+    product_variations: {
+      type: Array,
+      default: [],
+    },
+    isDraft: {
+      type: Boolean,
+      default: true,
+      index: true,
+      select: false,
+    },
+    isPublish: {
+      type: Boolean,
+      default: false,
+      index: true,
+      select: false,
+    },
   },
   {
     timestamps: true,
     collection: COLLECTION_NAME,
   }
 );
-
+productSchema.index({ product_name: "text", product_description: "text" });
+productSchema.pre("save", function (next) {
+  this.product_slug = slugify(this.product_name, { lower: true });
+  next();
+});
 // clothing
 const clothingSchema = new mongoose.Schema(
   {
