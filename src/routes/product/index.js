@@ -10,6 +10,7 @@ router.get("/:productId", asyncHandler(productController.findProduct));
 // auth route
 router.use(authentication);
 router.post("", asyncHandler(productController.createProduct));
+router.patch("/:productId", asyncHandler(productController.updateProduct));
 router.post(
   "/publish/:productId",
   asyncHandler(productController.publishProduct)

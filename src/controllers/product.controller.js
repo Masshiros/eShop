@@ -33,6 +33,16 @@ class ProductController {
       }),
     }).send(res);
   };
+  updateProduct = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Update Product Success",
+      metadata: await ProductService.updateProduct({
+        type: req.body.product_type,
+        productId: req.params.productId,
+        payload: { ...req.body, product_shop: req.session.userId },
+      }),
+    }).send(res);
+  };
   findAllDraftProducts = async (req, res, next) => {
     return new SuccessResponse({
       message: "Find all draft product Success",

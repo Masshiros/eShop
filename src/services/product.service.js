@@ -13,7 +13,9 @@ const {
   searchProductByKeySearch,
   findProduct,
   findAllProducts,
+  updateProductById,
 } = require("../models/repositories/product.repo");
+const { removeUndefinedObject, updateNestedObjectParser } = require("../utils");
 class ProductFactory {
   static productRegistry = {};
   static registerProductType(name, classRef) {
@@ -28,6 +30,16 @@ class ProductFactory {
     }
     return new productClass(payload).createProduct();
   }
+  static async updateProduct({ type, payload, productId }) {
+    const productClass = ProductFactory.productRegistry[type];
+    if (!productClass) {
+      throw new BadRequestResponseError({
+        message: "Product type not existed",
+      });
+    }
+    return new productClass(payload).updateProduct(productId);
+  }
+
   static async publishProduct({ product_id, product_shop }) {
     return await publishProduct({ product_shop, product_id });
   }
@@ -96,6 +108,13 @@ class Product {
   async createProduct(product_id) {
     return await productModel.create({ ...this, _id: product_id });
   }
+  async updateProduct(productId, bodyUpdate) {
+    return await updateProductById({
+      productId,
+      bodyUpdate,
+      model: productModel,
+    });
+  }
 }
 class Electronics extends Product {
   async createProduct() {
@@ -123,6 +142,21 @@ class Clothings extends Product {
     if (!product)
       throw new BadRequestResponseError({ message: "Create Product Error" });
     return product;
+  }
+  async updateProduct(productId) {
+    const payload = this
+    if (payload.product_attributes) {
+      await updateProductById({
+        productId,
+        bodyUpdate: updateNestedObjectParser(payload.product_attributes),
+        model: clothingModel,
+      });
+    }
+    const updatedProduct = await super.updateProduct(
+      productId,
+      updateNestedObjectParser(payload)
+    );
+    return updatedProduct;
   }
 }
 class Furniture extends Product {
