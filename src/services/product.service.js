@@ -16,6 +16,7 @@ const {
   updateProductById,
 } = require("../models/repositories/product.repo");
 const { removeUndefinedObject, updateNestedObjectParser } = require("../utils");
+const { insertInventory } = require("../models/repositories/inventory.repo");
 class ProductFactory {
   static productRegistry = {};
   static registerProductType(name, classRef) {
@@ -106,7 +107,17 @@ class Product {
     this.product_quantity = product_quantity;
   }
   async createProduct(product_id) {
-    return await productModel.create({ ...this, _id: product_id });
+    const product = await productModel.create({ ...this, _id: product_id });
+    if (product) {
+      await insertInventory({
+        productId: product._id,
+        shopId: this.product_shop,
+        stock: this.product_quantity,
+      });
+    } else {
+      throw new BadRequestResponseError("Error while creating product");
+    }
+    return product;
   }
   async updateProduct(productId, bodyUpdate) {
     return await updateProductById({
@@ -144,7 +155,7 @@ class Clothings extends Product {
     return product;
   }
   async updateProduct(productId) {
-    const payload = this
+    const payload = this;
     if (payload.product_attributes) {
       await updateProductById({
         productId,
