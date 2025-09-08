@@ -24,7 +24,7 @@ var productSchema = new mongoose.Schema(
       required: true,
     },
     product_quantity: {
-      type: String,
+      type: Number,
       required: true,
     },
     product_type: {
