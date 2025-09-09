@@ -67,6 +67,7 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
   return products;
 };
 const findProduct = async ({ product_id, unSelect }) => {
+  console.log(product_id);
   return await productModel
     .findOne({ _id: product_id })
     .select(getUnSelectData(unSelect));

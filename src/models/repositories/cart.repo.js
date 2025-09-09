@@ -23,6 +23,17 @@ const updateUserCartQuantity = async ({ userId, products }) => {
   }
 };
 const findCart = async (query) => {
-  return await cartModel.findOne(query);
+  return await cartModel.findOne(query).lean();
 };
-module.exports = { createUserCart, updateUserCartQuantity, findCart };
+const removeCartItem = async ({ userId, productIds = [] }) => {
+  await cartModel.updateOne(
+    { cart_userId: userId, cart_state: "active" },
+    { $pull: { cart_products: { productId: { $in: productIds } } } }
+  );
+};
+module.exports = {
+  createUserCart,
+  updateUserCartQuantity,
+  findCart,
+  removeCartItem,
+};

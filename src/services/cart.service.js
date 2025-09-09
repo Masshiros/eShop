@@ -6,8 +6,10 @@ const {
   findCart,
   createUserCart,
   updateUserCartQuantity,
+  removeCartItem,
 } = require("../models/repositories/cart.repo");
 const { findProduct } = require("../models/repositories/product.repo");
+const { convertToObjectIdMongodb } = require("../utils");
 
 /**
  * 1. Add product to cart [User]
@@ -18,6 +20,9 @@ const { findProduct } = require("../models/repositories/product.repo");
  */
 class CartService {
   static async addProductToCart({ userId, product }) {
+    const foundProduct = await findProduct({ product_id: product.productId });
+    if (!foundProduct)
+      throw new NotFoundResponseError({ message: "Product not found" });
     // cart no exist
     const userCart = await findCart({ cart_userId: userId });
     if (!userCart) {
@@ -70,7 +75,8 @@ class CartService {
         if (!foundProduct)
           throw new NotFoundResponseError({ message: "Product not found" });
         // validate product belong to shop
-        if (foundProduct.product_shop !== shopId) {
+
+        if (foundProduct.product_shop.toString() !== shopId) {
           throw new BadRequestResponseError({
             message: "Product not belong to shop",
           });
@@ -87,11 +93,20 @@ class CartService {
       }
     }
     if (removedProducts.length > 0) {
-      //remove cart item
+      return await removeCartItem({ userId, productIds: removedProducts });
     }
     if (updatedProducts.length > 0) {
-      return await updateUserCartQuantity({ userId, updatedProducts });
+      return await updateUserCartQuantity({
+        userId,
+        products: updatedProducts,
+      });
     }
   }
+  static async removeCartItem({ userId, productId }) {
+    return await removeCartItem({ userId, productIds: [productId] });
+  }
+  static async getListUserCart({ userId }) {
+    return await findCart({ cart_userId: userId });
+  }
 }
-module.export = CartService;
+module.exports = CartService;
