@@ -63,11 +63,10 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
     .limit(limit)
     .select(getSelectData(select))
     .lean();
-  console.log(products);
+
   return products;
 };
 const findProduct = async ({ product_id, unSelect }) => {
-  console.log(product_id);
   return await productModel
     .findOne({ _id: product_id })
     .select(getUnSelectData(unSelect));

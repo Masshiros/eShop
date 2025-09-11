@@ -147,7 +147,8 @@ class DiscountService {
         message: "Discount has been expired",
       });
     }
-    if (!discount.discount_max_uses) {
+
+    if (discount.discount_max_uses === 0) {
       throw new BadRequestResponseError({ message: "Discount unavailable" });
     }
     const {
@@ -166,7 +167,7 @@ class DiscountService {
     }
 
     let totalOrder = 0;
-    if (discount_min_order_value > 0) {
+    if (discount_min_order_value >= 0) {
       totalOrder = products.reduce((acc, product) => {
         return acc + product.quantity * product.price;
       }, 0);
@@ -176,8 +177,6 @@ class DiscountService {
           message: `Discount requires a minimum order value of ${discount_min_order_value}`,
         });
       }
-    } else {
-      throw new BadRequestResponseError({ message: "Discount unavailable" });
     }
     // check discount max_uses_per_user
 
