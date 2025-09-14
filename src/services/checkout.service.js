@@ -6,6 +6,8 @@ const {
 const { findProduct } = require("../models/repositories/product.repo");
 // Lưu ý: chỉnh import tùy cách export thực tế của bạn
 const DiscountService = require("./discount.service");
+const { acquireLock, releaseLock } = require("./redis.service");
+const orderModel = require("../models/order.model");
 // hoặc: const { DiscountService } = require("./discount.service");
 
 class CheckoutService {
@@ -138,6 +140,73 @@ class CheckoutService {
       shop_orders: item_products_result,
     };
   }
+  static async orderByUser({
+    shop_order_ids,
+    cartId,
+    userId,
+    user_address = {},
+    user_payment = {},
+  }) {
+    const { summary, shop_orders } = await this.checkoutReview({
+      cartId,
+      userId,
+      shop_order_ids,
+    });
+    // check to test product's amount > inventory's amount
+    const products = shop_orders.flatMap((order) => order.item_products);
+    if (!products)
+      throw new BadRequestResponseError({
+        message: "You have not bought anything in your cart",
+      });
+    const acquireProduct = [];
+    // get order's products' quantity and id
+    for (let i = 0; i < products.length; i++) {
+      const { productId, quantity } = products[i];
+      const keyLock = await acquireLock(productId, quantity, cartId);
+      acquireProduct.push(keyLock ? true : false);
+      if (keyLock) {
+        await releaseLock(keyLock);
+      }
+    }
+    // check whether one product is out of stock
+    if (acquireProduct.includes(false)) {
+      throw new BadRequestResponseError({
+        message: "Some product has been updated, please back to cart...",
+      });
+    }
+    // create order
+    const newOrder = await orderModel.create({
+      order_userId: userId,
+      order_checkout: summary,
+      order_shipping: user_address,
+      order_payment: user_payment,
+      order_products: shop_orders,
+    });
+    // if insert new order, remove product from user's cart
+    if (newOrder) {
+    }
+    return newOrder;
+  }
+  /**
+   * 1. Query Orders [User]
+   *
+   */
+  static async getOrdersByUser() {}
+  /**
+   * 2. Query 1 Order  [User]
+   *
+   */
+  static async getOrderByUser() {}
+  /**
+   * 3. Cancel Order  [User]
+   *
+   */
+  static async cancelOrderByUser() {}
+  /**
+   * 4. Update Order Status [Admin/Shop]
+   *
+   */
+  static async updateOrderByUser() {}
 }
 
 module.exports = CheckoutService;
