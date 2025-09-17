@@ -7,7 +7,9 @@ const cartRouter = require("./cart");
 const checkoutRouter = require("./checkout");
 const inventoriesRouter = require("./inventory");
 const { validateApiKey, validatePermission } = require("../middlewares/auth");
+const { pushLogToDiscord } = require("../middlewares/logger");
 // middleware
+router.use(pushLogToDiscord);
 router.use(validateApiKey);
 router.use(validatePermission("0000"));
 router.use("/v1/api/products", productRouter);
