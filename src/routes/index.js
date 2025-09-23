@@ -6,6 +6,7 @@ const discountRouter = require("./discount");
 const cartRouter = require("./cart");
 const checkoutRouter = require("./checkout");
 const inventoriesRouter = require("./inventory");
+const commentRouter = require("./comment");
 const { validateApiKey, validatePermission } = require("../middlewares/auth");
 const { pushLogToDiscord } = require("../middlewares/logger");
 // Khởi tạo services/tests
@@ -28,10 +29,12 @@ const productTest = require("../tests/product.test");
 router.use(pushLogToDiscord);
 router.use(validateApiKey);
 router.use(validatePermission("0000"));
+
 router.use("/v1/api/products", productRouter);
 router.use("/v1/api/discounts", discountRouter);
 router.use("/v1/api/inventories", inventoriesRouter);
 router.use("/v1/api/carts", cartRouter);
 router.use("/v1/api/checkouts", checkoutRouter);
+router.use("/v1/api/comments", commentRouter);
 router.use("/v1/api", accessRouter);
 module.exports = router;
