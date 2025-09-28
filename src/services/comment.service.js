@@ -1,6 +1,7 @@
 const { NotFoundResponseError } = require("../core/error.response");
 const commentModel = require("../models/comment.model");
-const convertToObjectIdMongodb = require("../utils");
+const { convertToObjectIdMongodb } = require("../utils");
+const { findProduct } = require("./product.service");
 class CommentService {
   static async addComment({ productId, userId, content, parentId = null }) {
     const comment = new commentModel({
@@ -95,6 +96,43 @@ class CommentService {
       });
     return comments;
   }
-  static async deleteComment() {}
+  static async deleteComments({ commentId, productId }) {
+    // check product still valid
+    const foundProduct = await findProduct({ product_id: productId });
+    if (!foundProduct)
+      throw new NotFoundResponseError({ message: "Product not found" });
+    // identify left and right
+    const comment = await commentModel.findById(commentId);
+    if (!comment)
+      throw new NotFoundResponseError({ message: "Comment not found" });
+    const left = comment.comment_left;
+    const right = comment.comment_right;
+    // calculate width
+    const width = right - left + 1;
+    // delete all comment and its sub comment
+    await commentModel.deleteMany({
+      comment_productId: convertToObjectIdMongodb(productId),
+      comment_left: { $gte: left, $lte: right },
+    });
+    // update all comment
+    await commentModel.updateMany(
+      {
+        comment_productId: convertToObjectIdMongodb(productId),
+        comment_right: { $gt: right },
+      },
+      {
+        $inc: { comment_right: -width },
+      }
+    );
+    await commentModel.updateMany(
+      {
+        comment_productId: convertToObjectIdMongodb(productId),
+        comment_left: { $gt: left },
+      },
+      {
+        $inc: { comment_right: -width },
+      }
+    );
+  }
 }
 module.exports = CommentService;

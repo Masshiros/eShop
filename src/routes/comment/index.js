@@ -9,4 +9,6 @@ const router = express.Router();
 // auth route
 router.use(authentication);
 router.post("", asyncHandler(commentController.createComment));
+router.get("", asyncHandler(commentController.getListComments));
+router.delete("", asyncHandler(commentController.deleteComments));
 module.exports = router;

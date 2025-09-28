@@ -11,5 +11,21 @@ class CommentController {
       }),
     }).send(res);
   };
+  getListComments = async (req, res, next) => {
+    return new SuccessResponse({
+      message: " Get list comment success",
+      metadata: await CommentService.getListCommentsByParentId({
+        ...req.body,
+      }),
+    });
+  };
+  deleteComments = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Delete comment success",
+      metadata: await CommentService.deleteComments({
+        ...req.body,
+      }),
+    });
+  };
 }
 module.exports = new CommentController();
