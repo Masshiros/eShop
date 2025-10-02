@@ -17,7 +17,7 @@ class CommentController {
       metadata: await CommentService.getListCommentsByParentId({
         ...req.body,
       }),
-    });
+    }).send(res);
   };
   deleteComments = async (req, res, next) => {
     return new SuccessResponse({
@@ -25,7 +25,7 @@ class CommentController {
       metadata: await CommentService.deleteComments({
         ...req.body,
       }),
-    });
+    }).send(res);
   };
 }
 module.exports = new CommentController();
